@@ -1,6 +1,7 @@
 from __future__ import annotations
 import sqlite3
 from typing import TYPE_CHECKING
+from case_gol.utils.populate_db import populate_db as _populate_db
 
 import click
 from flask import current_app, g
@@ -27,20 +28,32 @@ def close_db(e=None):
         db.close()
 
 
-def init_db():
+def init_db(populate_db=False):
     db = get_db()
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
+    if populate_db:
+        _populate_db(db)
+
 
 @click.command('init-db')
-def init_db_command():
+@click.option("--populate-db", default=False)
+def init_db_command(populate_db=False):
     """Clear the existing data and create new tables."""
-    init_db()
+    init_db(populate_db)
     click.echo('Initialized the database.')
+
+
+@click.command('populate-db')
+def populate_db_command():
+    """Populates DB with data from ANAC"""
+    _populate_db(get_db())
+    click.echo("Populated DB.")
 
 
 def init_app(app: Flask):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(populate_db_command)
