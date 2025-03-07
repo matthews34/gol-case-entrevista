@@ -94,7 +94,6 @@ def populate_db(db: sqlite3.Connection):
     c = db.cursor()
     c.execute("begin")
 
-    # TODO: criar coluna mercado manualmente
     def iter_reader():
         for i, row in enumerate(reader):
             if i % 1000 == 0:
