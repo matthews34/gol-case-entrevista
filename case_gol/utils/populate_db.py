@@ -1,14 +1,13 @@
 import csv
 import sqlite3
+from flask import current_app
 
 import click
 import requests
 
 
 def populate_db(db: sqlite3.Connection):
-    # TODO: retrieve url from config
-    url = "https://sistemas.anac.gov.br/dadosabertos/Voos%20e%20opera%C3%A7%C3%B5es%20a%C3%A9reas/Dados%20Estat%C3%ADsticos%20do%20Transporte%20A%C3%A9reo/Dados_Estatisticos.csv"
-    r = requests.get(url, stream=True)
+    r = requests.get(current_app.config["ANAC_DATA_URL"], stream=True)
 
     lines = r.iter_lines()
 

@@ -3,16 +3,14 @@ import os
 from flask import Flask
 
 from case_gol import database
+from case_gol.config import config_manager
 
 
 def create_app() -> Flask:
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'go-case.sqlite'),
-    )
-    app.config.from_pyfile("config.py", silent=True)
+    app.config.from_mapping(DATABASE=os.path.join(app.instance_path, "go-case.sqlite"))
+    app.config.from_object(config_manager[os.getenv("APP_ENVIRONMENT", "dev")])
 
     # ensure the instance folder exists
     try:
