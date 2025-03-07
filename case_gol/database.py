@@ -11,10 +11,9 @@ if TYPE_CHECKING:
 
 
 def get_db():
-    if 'db' not in g:
+    if "db" not in g:
         g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
+            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
         )
         g.db.row_factory = sqlite3.Row
 
@@ -22,7 +21,7 @@ def get_db():
 
 
 def close_db(e=None):
-    db = g.pop('db', None)
+    db = g.pop("db", None)
 
     if db is not None:
         db.close()
@@ -31,22 +30,22 @@ def close_db(e=None):
 def init_db(populate_db=False):
     db = get_db()
 
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
+    with current_app.open_resource("schema.sql") as f:
+        db.executescript(f.read().decode("utf8"))
 
     if populate_db:
         _populate_db(db)
 
 
-@click.command('init-db')
+@click.command("init-db")
 @click.option("--populate-db", default=False)
 def init_db_command(populate_db=False):
     """Clear the existing data and create new tables."""
     init_db(populate_db)
-    click.echo('Initialized the database.')
+    click.echo("Initialized the database.")
 
 
-@click.command('populate-db')
+@click.command("populate-db")
 def populate_db_command():
     """Populates DB with data from ANAC"""
     _populate_db(get_db())
