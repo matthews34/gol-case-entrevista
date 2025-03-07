@@ -5,24 +5,7 @@ from flask import current_app
 import click
 import requests
 
-
-def populate_db(db: sqlite3.Connection):
-    r = requests.get(current_app.config["ANAC_DATA_URL"], stream=True)
-
-    lines = r.iter_lines()
-
-    # skip first line
-    next(lines)
-
-    reader = csv.DictReader(
-        (line.decode("utf-8-sig") for line in lines),
-        delimiter=";",
-    )
-
-    c = db.cursor()
-    c.execute("begin")
-
-    insert_stmt = """INSERT INTO stats (
+INSERT_STMT = """INSERT INTO stats (
         ano,
         mes,
         aeroporto_de_origem_sigla,
@@ -94,6 +77,23 @@ def populate_db(db: sqlite3.Connection):
         :mercado
     ) ON CONFLICT DO NOTHING"""
 
+
+def populate_db(db: sqlite3.Connection):
+    r = requests.get(current_app.config["ANAC_DATA_URL"], stream=True)
+
+    lines = r.iter_lines()
+
+    # skip first line
+    next(lines)
+
+    reader = csv.DictReader(
+        (line.decode("utf-8-sig") for line in lines),
+        delimiter=";",
+    )
+
+    c = db.cursor()
+    c.execute("begin")
+
     # TODO: criar coluna mercado manualmente
     def iter_reader():
         for i, row in enumerate(reader):
@@ -118,5 +118,5 @@ def populate_db(db: sqlite3.Connection):
                 )
                 yield row
 
-    c.executemany(insert_stmt, iter_reader())
+    c.executemany(INSERT_STMT, iter_reader())
     c.execute("commit")
