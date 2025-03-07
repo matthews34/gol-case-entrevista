@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Gerar Gráfico{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <label for="market">Mercado</label>
+    <input name="market" id="market" required>
+    <label for="start_year">Ano inicial</label>
+    <input type="start_year" name="start_year" id="start_year" required>
+    <label for="start_month">Mes inicial</label>
+    <input type="start_month" name="start_month" id="start_month" required>
+    <label for="end_year">Ano final</label>
+    <input type="end_year" name="end_year" id="end_year" required>
+    <label for="end_month">Mês final</label>
+    <input type="end_month" name="end_month" id="end_month" required>
+    <input type="submit" value="Gerar">
+</form>
+{% endblock %}
