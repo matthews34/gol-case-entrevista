@@ -11,7 +11,7 @@ class DevConfig(Config):
 
 
 class ProdConfig(Config):
-    DATABASE = os.environ["DATABASE_PATH"]
+    DATABASE = os.environ.get("DATABASE_PATH")
 
 
 config_manager = {

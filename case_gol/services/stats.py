@@ -1,8 +1,11 @@
 import base64
 from io import BytesIO
+import math
 from matplotlib import pyplot as plt
 
 from case_gol.database import get_db
+
+MAX_X_LEN = 12
 
 
 def _plot_graph(periods, rpks):
@@ -13,7 +16,11 @@ def _plot_graph(periods, rpks):
         ylabel="RPK",
         adjustable="datalim",
     )
-    ax.set_xticklabels(periods, rotation=45)
+
+    # cap x tick labels size to avoid clutter
+    step = math.ceil(len(periods) / MAX_X_LEN)
+    ax.set_xticks(range(0, len(periods), step), periods[::step], rotation=45)
+
     plt.ticklabel_format(style="plain", axis="y")
     ax.plot(periods, rpks)
     ax.grid()
