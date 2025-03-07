@@ -1,29 +1,11 @@
 import csv
 import sqlite3
+from flask import current_app
 
 import click
 import requests
 
-
-def populate_db(db: sqlite3.Connection):
-    # TODO: retrieve url from config
-    url = "https://sistemas.anac.gov.br/dadosabertos/Voos%20e%20opera%C3%A7%C3%B5es%20a%C3%A9reas/Dados%20Estat%C3%ADsticos%20do%20Transporte%20A%C3%A9reo/Dados_Estatisticos.csv"
-    r = requests.get(url, stream=True)
-
-    lines = r.iter_lines()
-
-    # skip first line
-    next(lines)
-
-    reader = csv.DictReader(
-        (line.decode("utf-8-sig") for line in lines),
-        delimiter=";",
-    )
-
-    c = db.cursor()
-    c.execute("begin")
-
-    insert_stmt = """INSERT INTO stats (
+INSERT_STMT = """INSERT INTO stats (
         ano,
         mes,
         aeroporto_de_origem_sigla,
@@ -95,7 +77,23 @@ def populate_db(db: sqlite3.Connection):
         :mercado
     ) ON CONFLICT DO NOTHING"""
 
-    # TODO: criar coluna mercado manualmente
+
+def populate_db(db: sqlite3.Connection):
+    r = requests.get(current_app.config["ANAC_DATA_URL"], stream=True)
+
+    lines = r.iter_lines()
+
+    # skip first line
+    next(lines)
+
+    reader = csv.DictReader(
+        (line.decode("utf-8-sig") for line in lines),
+        delimiter=";",
+    )
+
+    c = db.cursor()
+    c.execute("begin")
+
     def iter_reader():
         for i, row in enumerate(reader):
             if i % 1000 == 0:
@@ -119,5 +117,5 @@ def populate_db(db: sqlite3.Connection):
                 )
                 yield row
 
-    c.executemany(insert_stmt, iter_reader())
+    c.executemany(INSERT_STMT, iter_reader())
     c.execute("commit")
