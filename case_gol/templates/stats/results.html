@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Resultado{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<img src="data:image/png;base64,{{ graph }}">
+{% endblock %}

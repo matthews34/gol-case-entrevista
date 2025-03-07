@@ -20,16 +20,17 @@ def create_app() -> Flask:
     except OSError:
         pass
 
-    # TODO: switch by the actual index
-    @app.route('/')
-    def hello() -> str:
-        return 'Hello, World!'
-
     # initialize db
     database.init_app(app)
 
     # register blueprints
     from . import auth
+
     app.register_blueprint(auth.bp)
+
+    from . import stats
+
+    app.register_blueprint(stats.bp)
+    app.add_url_rule("/", endpoint="index")
 
     return app
