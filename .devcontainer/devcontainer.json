@@ -15,7 +15,15 @@
 				"ms-python.black-formatter",
 				"ms-python.isort",
 				"albert.tabout"
-			]
+			],
+			"settings": {
+				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter"
+				},
+				"flake8.args": [
+					"--max-line-length=88"
+				]
+			}
 		}
 	},
 	"remoteUser": "vscode",
